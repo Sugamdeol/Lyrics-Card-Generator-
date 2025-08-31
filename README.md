@@ -2,11 +2,8 @@
 
 A stylish, browser-based tool to create beautiful, shareable lyrics cards. Perfect for social media, blogs, or personal archives. This generator offers a live preview and extensive customization options to bring your favorite song lyrics to life.
 
-**[➡️ View Live Demo](https://your-github-username.github.io/your-repo-name/)**  
-*(Replace the link above after deploying to GitHub Pages)*
+**[➡️ View Live Demo](https://lyrical-sd.vercel.app/)**  
 
-![Lyrical Screenshot](https://i.imgur.com/example.png)  
-*(Replace this with a screenshot of your generator)*
 
 ## About The Project
 
