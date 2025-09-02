@@ -5,159 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Advanced Lyrics Card Generator</title>
     
-    <!-- Library for downloading the card as an image -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- Importing beautiful fonts from Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@500;700&family=Playfair+Display:wght@700&family=Roboto+Mono&family=Lobster&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --dark-bg: #121212;
-            --light-bg: #181818;
-            --primary: #1DB954;
-            --text-light: #ffffff;
-            --text-dark: #000000;
-            --border-color: #282828;
-            --input-bg: #333;
+            --dark-bg: #121212; --light-bg: #181818; --primary: #1DB954;
+            --text-light: #ffffff; --text-dark: #000000; --border-color: #282828; --input-bg: #333;
         }
-
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--dark-bg);
-            color: var(--text-light);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
+            font-family: 'Montserrat', sans-serif; background-color: var(--dark-bg); color: var(--text-light);
+            display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
+            margin: 0; padding: 20px; box-sizing: border-box; overflow-y: auto;
         }
-
         .main-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
-            align-items: center;
-            max-width: 1100px;
-            width: 100%;
+            display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;
+            align-items: flex-start; max-width: 1200px; width: 100%;
         }
-
         .controls-section {
-            background-color: var(--light-bg);
-            padding: 30px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            flex: 1;
-            min-width: 320px;
-            max-width: 400px;
-            border: 1px solid var(--border-color);
+            background-color: var(--light-bg); padding: 30px; border-radius: 12px;
+            display: flex; flex-direction: column; gap: 25px; flex: 2; min-width: 320px;
+            max-width: 500px; border: 1px solid var(--border-color);
         }
-
         .control-heading {
-            margin: 0;
-            text-align: center;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.5em;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
+            margin: 0; text-align: center; color: var(--primary); font-weight: 700;
+            font-size: 1.5em; padding-bottom: 10px; border-bottom: 1px solid var(--border-color);
         }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            color: #b3b3b3;
-            font-weight: 500;
-        }
-        
+        .input-group, .search-group { display: flex; flex-direction: column; }
+        .input-group label, .search-group label { margin-bottom: 8px; font-size: 0.9em; color: #b3b3b3; font-weight: 500; }
         input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #444;
-            background-color: var(--input-bg);
-            color: var(--text-light);
-            box-sizing: border-box;
-            font-size: 16px;
-            font-family: 'Montserrat', sans-serif;
+            width: 100%; padding: 12px; border-radius: 5px; border: 1px solid #444;
+            background-color: var(--input-bg); color: var(--text-light); box-sizing: border-box;
+            font-size: 16px; font-family: 'Montserrat', sans-serif;
         }
-
-        textarea { min-height: 120px; resize: vertical; }
-
+        .search-bar { display: flex; gap: 10px; }
+        #searchInput { flex: 1; }
+        #searchButton { padding: 12px 20px; border-radius: 5px; border: none; background-color: var(--primary); color: var(--text-dark); font-weight: 700; cursor: pointer; }
+        #searchResults { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .search-result-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 5px; background-color: #282828; cursor: pointer; transition: background-color 0.2s; }
+        .search-result-item:hover { background-color: #333; }
+        .search-result-item img { width: 50px; height: 50px; border-radius: 4px; }
+        .search-result-info h4, .search-result-info p { margin: 0; line-height: 1.3; }
+        .search-result-info h4 { font-size: 0.9em; } .search-result-info p { font-size: 0.8em; color: #b3b3b3; }
+        #lyricsDisplayContainer { display: none; }
+        #lyricsDisplay { background-color: var(--dark-bg); border: 1px solid var(--border-color); border-radius: 5px; padding: 15px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; font-family: 'Roboto Mono', monospace; font-size: 0.9em; }
+        textarea#lyricsInput { min-height: 120px; resize: vertical; }
         .color-picker-group { display: flex; gap: 10px; }
         .color-picker-group > div { flex: 1; }
         input[type="color"] { padding: 5px; height: 50px; cursor: pointer; }
-        
         .toggle-switch { display: flex; align-items: center; gap: 10px; }
-
-        button#downloadCard {
-            width: 100%;
-            padding: 15px;
-            border-radius: 50px;
-            border: none;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-            background-color: var(--primary);
-            color: var(--text-dark);
-            margin-top: 10px;
-        }
+        button#downloadCard { width: 100%; padding: 15px; border-radius: 50px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 0.2s ease; background-color: var(--primary); color: var(--text-dark); margin-top: 10px; }
         button#downloadCard:hover { transform: scale(1.05); }
-
-        .card-container-wrapper {
-            flex: 1.5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-width: 350px;
-            padding: 20px 0;
-        }
-        
+        .card-container-wrapper { flex: 1.5; display: flex; justify-content: center; align-items: center; min-width: 420px; padding: 20px 0; }
         .lyrics-card {
-            width: 380px;
-            min-height: 380px;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            color: var(--text-light);
+            width: 380px; min-height: 380px; padding: 35px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: flex; flex-direction: column; transition: all 0.3s ease; color: var(--text-light); background-color: #AD6A8D;
+            background-size: cover; background-position: center; position: relative;
         }
-
-        .song-header { margin-bottom: auto; }
+        .lyrics-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.3); border-radius: 12px; transition: background-color 0.3s ease; }
+        .card-content { z-index: 1; position: relative; display: flex; flex-direction: column; height: 100%; }
+        .song-header { display: flex; align-items: center; gap: 15px; margin-bottom: auto; }
+        .header-album-art { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        #cardSongTitle, #cardArtistName { text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
         #cardSongTitle { margin: 0; font-size: 1.5em; font-weight: 700; }
         #cardArtistName { margin: 5px 0 0; font-size: 1.1em; opacity: 0.85; }
-
-        #cardLyrics {
-            font-size: 1.8em;
-            line-height: 1.45;
-            white-space: pre-wrap;
-            font-weight: 700;
-            margin: 30px 0;
-        }
-
-        #cardWatermark {
-            font-family: 'Great Vibes', cursive;
-            font-size: 1.5em;
-            opacity: 0.75;
-            margin-top: auto;
-            align-self: flex-end;
-        }
+        #cardLyrics { font-size: 1.8em; line-height: 1.45; white-space: pre-wrap; font-weight: 700; margin: 30px 0; text-shadow: 1px 1px 5px rgba(0,0,0,0.5); }
+        #cardWatermark { font-family: 'Great Vibes', cursive; font-size: 1.5em; opacity: 0.75; margin-top: auto; align-self: flex-end; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); }
+        .loader { text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
@@ -167,172 +83,219 @@
         <div class="controls-section">
             <h2 class="control-heading">Lyrics Card Studio</h2>
             
-            <!-- Content Section -->
+            <div class="search-group">
+                <label for="searchInput">1. Find a Song (Optional)</label>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Enter song or artist name...">
+                    <button id="searchButton">Search</button>
+                </div>
+            </div>
+            <div id="searchResults"></div>
+
+            <div id="lyricsDisplayContainer">
+                <label>2. Copy Lyrics Below</label>
+                <div id="lyricsDisplay"></div>
+            </div>
+
+            <h3 class="control-heading" style="font-size: 1.2em; margin-top: 10px;">Card Content</h3>
             <div class="input-group">
                 <label for="songTitleInput">Song Title</label>
-                <input type="text" id="songTitleInput" value="You Never Know">
+                <input type="text" id="songTitleInput" placeholder="Enter a song title...">
             </div>
-            <div class="input-group">
+             <div class="input-group">
                 <label for="artistNameInput">Artist Name</label>
-                <input type="text" id="artistNameInput" value="BLACKPINK">
+                <input type="text" id="artistNameInput" placeholder="Enter an artist name...">
             </div>
             <div class="input-group">
                 <label for="lyricsInput">Lyrics</label>
-                <textarea id="lyricsInput">'Cause everybody sees what they wanna see...</textarea>
+                <textarea id="lyricsInput" placeholder="Paste lyrics here..."></textarea>
             </div>
             <div class="input-group">
                 <label for="watermarkInput">Watermark</label>
                 <input type="text" id="watermarkInput" value="crafted.by.sugam">
             </div>
 
-            <!-- Styling Section -->
-            <h3 class="control-heading" style="font-size: 1.2em; margin-top: 20px;">Styling</h3>
+            <h3 class="control-heading" style="font-size: 1.2em; margin-top: 10px;">Styling</h3>
+            <div class="input-group toggle-switch">
+                <input type="checkbox" id="showAlbumArtToggle" checked>
+                <label for="showAlbumArtToggle">Show Album Art in Header</label>
+            </div>
             <div class="input-group">
                 <label>Background Style</label>
-                <div class="toggle-switch">
-                    <span>Solid</span>
-                    <input type="checkbox" id="gradientToggle">
-                    <label for="gradientToggle"></label>
-                    <span>Gradient</span>
-                </div>
+                <select id="backgroundStylePicker">
+                    <option value="albumArt" selected>Album Art (as Background)</option>
+                    <option value="solid">Solid Color</option>
+                    <option value="gradient">Gradient</option>
+                </select>
             </div>
-            <div class="color-picker-group">
-                <div>
-                    <label for="colorPicker1">Color 1</label>
-                    <input type="color" id="colorPicker1" value="#AD6A8D">
+            <div id="colorControlsContainer" style="display: none;">
+                <div class="color-picker-group">
+                    <div><label for="colorPicker1">Color 1</label><input type="color" id="colorPicker1" value="#AD6A8D"></div>
+                    <div id="colorPicker2Container"><label for="colorPicker2">Color 2</label><input type="color" id="colorPicker2" value="#2b1722"></div>
                 </div>
-                <div id="colorPicker2Container" style="display: none;">
-                    <label for="colorPicker2">Color 2</label>
-                    <input type="color" id="colorPicker2" value="#2b1722">
-                </div>
-            </div>
-            <div id="gradientAngleContainer" style="display: none;">
-                <label for="gradientAngle">Gradient Angle</label>
-                <input type="range" id="gradientAngle" min="0" max="360" value="135">
+                <div id="gradientAngleContainer"><label for="gradientAngle">Gradient Angle</label><input type="range" id="gradientAngle" min="0" max="360" value="135"></div>
             </div>
              <div class="input-group">
-                <label for="fontPicker">Lyrics Font</label>
+                <label for="fontPicker">Font Style</label>
                 <select id="fontPicker">
-                    <option value="'Montserrat', sans-serif" selected>Montserrat (Modern)</option>
-                    <option value="'Playfair Display', serif">Playfair Display (Elegant)</option>
-                    <option value="'Lobster', cursive">Lobster (Cursive)</option>
-                    <option value="'Roboto Mono', monospace">Roboto Mono (Typewriter)</option>
+                    <option value="'Montserrat', sans-serif" selected>Montserrat</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'Lobster', cursive">Lobster</option>
+                    <option value="'Roboto Mono', monospace">Roboto Mono</option>
                 </select>
             </div>
             <div class="input-group">
                 <label>Text Color</label>
                 <div class="toggle-switch">
-                    <label><input type="radio" name="textColor" value="#ffffff" checked> White</label>
+                    <label style="margin-right: 15px;"><input type="radio" name="textColor" value="#ffffff" checked> White</label>
                     <label><input type="radio" name="textColor" value="#000000"> Black</label>
                 </div>
             </div>
 
-            <!-- Actions -->
             <button id="downloadCard">Download Card</button>
         </div>
 
         <!-- LIVE PREVIEW SECTION -->
         <div class="card-container-wrapper">
             <div class="lyrics-card" id="cardToDownload">
-                <div class="song-header">
-                    <h3 id="cardSongTitle">You Never Know</h3>
-                    <p id="cardArtistName">BLACKPINK</p>
+                <div class="card-content">
+                    <div class="song-header">
+                        <img src="" alt="Album Art" id="cardAlbumArt" class="header-album-art">
+                        <div class="song-info">
+                             <h3 id="cardSongTitle">Song Title</h3>
+                             <p id="cardArtistName">Artist Name</p>
+                        </div>
+                    </div>
+                    <p id="cardLyrics">Your lyrics will<br>appear here...</p>
+                    <p id="cardWatermark">crafted.by.sugam</p>
                 </div>
-                <p id="cardLyrics">'Cause everybody sees<br>what they wanna see...</p>
-                <p id="cardWatermark">crafted.by.sugam</p>
             </div>
         </div>
     </div>
 
     <script>
-        // --- ELEMENT SELECTION ---
+        const API_BASE_URL = "https://saavn.dev/api";
+        let currentAlbumArtURL = 'https://via.placeholder.com/380'; // Default placeholder
+        
         const controls = {
-            songTitle: document.getElementById('songTitleInput'),
-            artistName: document.getElementById('artistNameInput'),
-            lyrics: document.getElementById('lyricsInput'),
-            watermark: document.getElementById('watermarkInput'),
-            gradientToggle: document.getElementById('gradientToggle'),
-            color1: document.getElementById('colorPicker1'),
-            color2: document.getElementById('colorPicker2'),
-            gradientAngle: document.getElementById('gradientAngle'),
-            fontPicker: document.getElementById('fontPicker'),
-            textColorRadios: document.querySelectorAll('input[name="textColor"]'),
-            downloadBtn: document.getElementById('downloadCard'),
-            colorPicker2Container: document.getElementById('colorPicker2Container'),
-            gradientAngleContainer: document.getElementById('gradientAngleContainer')
+            searchInput: document.getElementById('searchInput'), searchButton: document.getElementById('searchButton'),
+            searchResults: document.getElementById('searchResults'), lyricsDisplayContainer: document.getElementById('lyricsDisplayContainer'),
+            lyricsDisplay: document.getElementById('lyricsDisplay'), songTitleInput: document.getElementById('songTitleInput'),
+            artistNameInput: document.getElementById('artistNameInput'), lyricsInput: document.getElementById('lyricsInput'),
+            watermarkInput: document.getElementById('watermarkInput'), showAlbumArtToggle: document.getElementById('showAlbumArtToggle'),
+            backgroundStylePicker: document.getElementById('backgroundStylePicker'), colorControlsContainer: document.getElementById('colorControlsContainer'),
+            colorPicker1: document.getElementById('colorPicker1'), colorPicker2Container: document.getElementById('colorPicker2Container'),
+            colorPicker2: document.getElementById('colorPicker2'), gradientAngleContainer: document.getElementById('gradientAngleContainer'),
+            gradientAngle: document.getElementById('gradientAngle'), fontPicker: document.getElementById('fontPicker'),
+            textColorRadios: document.querySelectorAll('input[name="textColor"]'), downloadBtn: document.getElementById('downloadCard')
         };
         
         const cardElements = {
-            card: document.getElementById('cardToDownload'),
-            songTitle: document.getElementById('cardSongTitle'),
-            artistName: document.getElementById('cardArtistName'),
-            lyrics: document.getElementById('cardLyrics'),
+            card: document.getElementById('cardToDownload'), cardOverlay: document.querySelector('.lyrics-card::before'),
+            albumArt: document.getElementById('cardAlbumArt'), songTitle: document.getElementById('cardSongTitle'),
+            artistName: document.getElementById('cardArtistName'), lyrics: document.getElementById('cardLyrics'),
             watermark: document.getElementById('cardWatermark')
         };
 
-        // --- LIVE UPDATE FUNCTION ---
-        function updateCard() {
-            // Update Text Content
-            cardElements.songTitle.textContent = controls.songTitle.value || "Song Title";
-            cardElements.artistName.textContent = controls.artistName.value || "Artist Name";
-            cardElements.watermark.textContent = controls.watermark.value || "";
-            cardElements.lyrics.innerHTML = (controls.lyrics.value || "Your lyrics...").replace(/\n/g, '<br>');
+        async function searchSongs(query) {
+            controls.searchResults.innerHTML = `<div class="loader">Searching...</div>`;
+            try {
+                const response = await fetch(`${API_BASE_URL}/search/songs?query=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error('API Error');
+                const json = await response.json();
+                displaySearchResults(json.data.results);
+            } catch (error) { controls.searchResults.innerHTML = `<div class="loader">Failed to fetch songs.</div>`; }
+        }
 
-            // Update Background
-            const isGradient = controls.gradientToggle.checked;
-            controls.colorPicker2Container.style.display = isGradient ? 'block' : 'none';
-            controls.gradientAngleContainer.style.display = isGradient ? 'block' : 'none';
+        async function getSongDetails(songId) {
+            controls.lyricsDisplayContainer.style.display = 'block';
+            controls.lyricsDisplay.innerHTML = `<div class="loader">Fetching details...</div>`;
+            try {
+                const response = await fetch(`${API_BASE_URL}/songs/${songId}?lyrics=true`);
+                if (!response.ok) throw new Error('API Error');
+                const json = await response.json();
+                const songData = json.data[0];
+                
+                controls.songTitleInput.value = songData.name;
+                controls.artistNameInput.value = songData.primaryArtists;
+                currentAlbumArtURL = songData.image.find(img => img.quality === '500x500')?.url || songData.image[0].url;
+                
+                controls.lyricsDisplay.textContent = (songData.lyrics && songData.lyrics.lyrics) ? songData.lyrics.lyrics : "Sorry, lyrics not available.";
+                updateCard();
+            } catch (error) { controls.lyricsDisplay.textContent = "Failed to fetch details."; }
+        }
+
+        function displaySearchResults(songs) {
+            controls.searchResults.innerHTML = '';
+            if (!songs || songs.length === 0) { controls.searchResults.innerHTML = `<div class="loader">No songs found.</div>`; return; }
+            songs.slice(0, 5).forEach(song => {
+                const item = document.createElement('div');
+                item.className = 'search-result-item';
+                const imageUrl = song.image.find(img => img.quality === '50x50')?.url || song.image[0].url;
+                item.innerHTML = `<img src="${imageUrl}" alt="${song.name}"><div class="search-result-info"><h4>${song.name}</h4><p>${song.primaryArtists}</p></div>`;
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.search-result-item').forEach(el => el.style.backgroundColor = '#282828');
+                    item.style.backgroundColor = '#444';
+                    getSongDetails(song.id);
+                });
+                controls.searchResults.appendChild(item);
+            });
+        }
+        
+        function updateCard() {
+            cardElements.songTitle.textContent = controls.songTitleInput.value || "Song Title";
+            cardElements.artistName.textContent = controls.artistNameInput.value || "Artist Name";
+            cardElements.watermark.textContent = controls.watermarkInput.value || "";
+            cardElements.lyrics.innerHTML = (controls.lyricsInput.value || "Your lyrics...").replace(/\n/g, '<br>');
+
+            const showArtInHeader = controls.showAlbumArtToggle.checked;
+            cardElements.albumArt.src = currentAlbumArtURL;
+            cardElements.albumArt.style.display = showArtInHeader ? 'block' : 'none';
+
+            const backgroundStyle = controls.backgroundStylePicker.value;
+            controls.colorControlsContainer.style.display = (backgroundStyle === 'solid' || backgroundStyle === 'gradient') ? 'block' : 'none';
+            cardElements.card.style.backgroundImage = 'none';
             
-            if (isGradient) {
-                cardElements.card.style.background = `linear-gradient(${controls.gradientAngle.value}deg, ${controls.color1.value}, ${controls.color2.value})`;
-            } else {
-                cardElements.card.style.background = controls.color1.value;
+            if (backgroundStyle === 'albumArt' && currentAlbumArtURL) {
+                cardElements.card.style.backgroundImage = `url(${currentAlbumArtURL})`;
+            } else if (backgroundStyle === 'solid') {
+                cardElements.card.style.backgroundColor = controls.colorPicker1.value;
+            } else if (backgroundStyle === 'gradient') {
+                controls.colorPicker2Container.style.display = 'block';
+                controls.gradientAngleContainer.style.display = 'block';
+                cardElements.card.style.background = `linear-gradient(${controls.gradientAngle.value}deg, ${controls.colorPicker1.value}, ${controls.colorPicker2.value})`;
             }
 
-            // Update Fonts
             const selectedFont = controls.fontPicker.value;
-            cardElements.lyrics.style.fontFamily = selectedFont;
-            cardElements.songTitle.style.fontFamily = selectedFont;
-            cardElements.artistName.style.fontFamily = selectedFont;
+            [cardElements.songTitle, cardElements.artistName, cardElements.lyrics].forEach(el => el.style.fontFamily = selectedFont);
 
-            // Update Text Color
             const selectedTextColor = document.querySelector('input[name="textColor"]:checked').value;
             cardElements.card.style.color = selectedTextColor;
         }
 
-        // --- ATTACH EVENT LISTENERS ---
         Object.values(controls).forEach(control => {
             if (control.nodeName === 'INPUT' || control.nodeName === 'TEXTAREA' || control.nodeName === 'SELECT') {
                 control.addEventListener('input', updateCard);
-            } else if (control.length) { // For radio buttons
+            } else if (control.length) {
                 control.forEach(radio => radio.addEventListener('change', updateCard));
             }
         });
-        controls.gradientToggle.addEventListener('change', updateCard);
-
-        // --- DOWNLOAD FUNCTIONALITY ---
+        controls.searchButton.addEventListener('click', () => { if (controls.searchInput.value.trim()) searchSongs(controls.searchInput.value.trim()); });
+        controls.searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') controls.searchButton.click(); });
         controls.downloadBtn.addEventListener('click', function() {
-            alert("Generating your card... The download will start shortly.");
-            html2canvas(cardElements.card, {
-                scale: 3,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: null // Let the element's background shine through
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'lyrics-card.png';
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }).catch(err => {
-                console.error("Error generating card image:", err);
-                alert("Sorry, the card could not be downloaded. Please try again or check the console for errors.");
-            });
+            alert("Generating your card...");
+            html2canvas(cardElements.card, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null })
+                .then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'lyrics-card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }).catch(err => { console.error("Download Error:", err); alert("Sorry, the card could not be downloaded."); });
         });
 
-        // --- INITIAL LOAD ---
-        updateCard();
+        updateCard(); // Initial call
     </script>
 </body>
 </html>
